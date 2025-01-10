@@ -1,0 +1,24 @@
+Kaggle Competition - WSDM CUP - Multilingual Chatbot Arena
+
+Summary
+
+This project consists in developing a DL/ML/AI tool in charged of analyzing two LLM responses and select the one who
+addresses human preferences more accurately.
+
+TODO list to succesfully accomplish this task:
+1. Explore the provided dataset, consisting of binary data in the shape of parquet files. Get familiar with the
+data structure and start to think on the desired format which will be parsed through the model. Also, think 
+about whether or not more data should be necessary in order to increase performance. Class imbalance? Need
+to process input text? Think of a better way to visualize prompts/responses.
+
+2. Based on my experience with RLHF, this task ressembles the reward model training step, where an LLM receives
+prompts/responses from diffferent models with a corresponding ranking. Thus my first approximation will consist of
+a fine-tuning an LLM which will received prompt/reponse from the two models and the label will be a binary variable
+indicating whose model was the best. Therefore the chosen model will be a pre-trained LLM and the output layer will
+consist of two neurons indicating the probability that model [a\b] is the best one.
+
+3. Think about the best sate-of-the art models, fine tune them to our target dataset and benchmark their performance. 
+Try different model configurations, hyperparameter cross-validation.
+
+4. If the best model's performance is not what we expected, repeat the creativity process starting from step 1 to 3.
+
