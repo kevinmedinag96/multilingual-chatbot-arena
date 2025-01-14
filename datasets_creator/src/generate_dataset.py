@@ -1,4 +1,8 @@
 
+import sys
+import pathlib
+root_repo_directory = pathlib.Path().resolve().__str__()
+sys.path.append(root_repo_directory)
 from multilingual_chatbot_arena import initialize
 import datasets_creator.src.constants as c
 import datasets_creator.src.utils as utils
@@ -9,12 +13,22 @@ from typing import List,Optional,Dict,Union
 import pathlib
 import numpy as np
 import pickle
+import json
 
 import os
 import opik
 from loguru import logger
 from opik import track, opik_context
 import time
+
+
+from unstructured.cleaners.core import (
+    clean,
+    clean_extra_whitespace,
+    clean_non_ascii_chars,
+    group_broken_paragraphs,
+    replace_unicode_quotes,
+)
 
 
 
@@ -100,7 +114,8 @@ class ChatbotDatasetsConstruct:
 
         # extract from df prompt-answer and store it in a list
         def construct_dict(x) -> dict[str, str]:
-            return {"prompt" : x.custom_prompt, "answer" : x.custom_answer}
+            return {"prompt" : x.custom_prompt, "answer" : x.custom_answer, "language" : x.language}
+        
     
         return self._df.apply(construct_dict,axis=1).values        
 
@@ -189,14 +204,13 @@ class ChatbotDatasetsConstruct:
             parent_folder = c.CURR_PATH + c.SLASH + self._data.rel_output_path
             logger.info(f"Loading training/validation sets in {parent_folder}")
 
-            utils.to_pickle(self._training_data,parent_folder + c.SLASH + "train","train_data")
+            utils.to_parquet(self._training_data,parent_folder + c.SLASH + "train","train_data")
 
             #validation data
-            utils.to_pickle(self._validation_data,parent_folder + c.SLASH + "validation","validation_data")
+            utils.to_parquet(self._validation_data,parent_folder + c.SLASH + "validation","validation_data")
 
         else:
             logger.info("Loading training/validation sets into my workspace in Comet ML")
-            return
             self.upload_datasets_to_comet()
         logger.success("Training/validation sets loaded sucessfully.")
 
@@ -213,7 +227,7 @@ class ChatbotDatasetsConstruct:
             dataset_comet = client.get_or_create_dataset(name=f"multilingual-chatbot-arena-train-{i+1}",
             description=f"Challenge: Multilingual Chatbot Arena. Training set {i+1}.")
 
-            for batch in utils.batch_generator(dataset,self._data.batch_size):
+            for _,batch in enumerate(utils.batch_generator(dataset,self._data.batch_size,True,True)):
                 dataset_comet.insert(batch)
                 time.sleep(60.0)
 
@@ -224,7 +238,7 @@ class ChatbotDatasetsConstruct:
             dataset_comet = client.get_or_create_dataset(name=f"multilingual-chatbot-arena-validation-{i+1}",
             description=f"Challenge: Multilingual Chatbot Arena. Validation set {i+1}.")
 
-            for batch in utils.batch_generator(dataset,self._data.batch_size):
+            for batch in utils.batch_generator(dataset,self._data.batch_size,True,True):
                 dataset_comet.insert(batch)
                 time.sleep(60.0)
        
