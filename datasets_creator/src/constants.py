@@ -1,7 +1,7 @@
 import pathlib
-PROMPT_TEMPLATE = """
-You are an expert in assesing LLM's model response based on a prompt. I will give you an input prompt (**prompt**) with two different responses coming from fellow LLM models; the first model's response is called **response_a** and second model's response is **response_b**. You can find the previous information after the double slashes (//), respecting the correct title based on the proper input.Your task is to assess the content of each response based on its quality and human's language similarity, then choose the model's response which adheres best to the given guidelines.\nYour response must obey the following format: "Best model is model_[] based on its human preferability response for the input prompt.". You will substitute "[]" with either "a" if you think **response_a** is better than **response_b**, or "b" otherwise.\n\n//\n**prompt**:\n{prompt}\n\n**response_a**:\n{response_a}\n\n**response_b**:\n{response_b}
-"""
+
+SYSTEM_TEMPLATE = 'You are a specialist in evaluating multilingual chat responses, with a focus on comparing and ranking outputs from different LLMs. Your primary goal is to determine which response is more likely to be preferred by humans based on factors such as clarity, relevance, tone, and overall quality.\n'
+PROMPT_TEMPLATE = """Below is a prompt with two possible responses (**Response A** and **Response B**). Evaluate them, select the best one and answer in the following format (it is imperative that you respect the specified format, do not add any more text than what I ask for):\n1.- Write 'model_a' if the **Response A** is better than **Response B**, otherwise write 'model_b'.\n\n**Prompt**:\n{prompt}\n\n**Response A**:\n{response_a}\n\n**Response B**:\n{response_b}\n"""
 CURR_PATH: str =  pathlib.Path().resolve().__str__()
 SLASH = "/"
 UNDERSCORE = "_"

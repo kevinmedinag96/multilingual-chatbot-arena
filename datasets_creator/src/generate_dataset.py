@@ -20,6 +20,7 @@ import opik
 from loguru import logger
 from opik import track, opik_context
 import time
+from tqdm import tqdm
 
 
 from unstructured.cleaners.core import (
@@ -105,7 +106,7 @@ class ChatbotDatasetsConstruct:
         self._df["custom_prompt"] = self._df.apply(construct_prompt,axis=1)
 
         def construct_answer(x):
-            return f"Best model is {x.winner} based on its human preferability response for the input prompt."
+            return f"{x.winner}"
         self._df["custom_answer"] = self._df.apply(construct_answer,axis=1)
 
         if self.debug:
@@ -220,27 +221,29 @@ class ChatbotDatasetsConstruct:
         Uploads the generated train/validation datasets into my *COMET_WORKSPACE* datasets.
         """ 
         #set up client with workspace name and api key  
-        client = opik.Opik(workspace=os.environ['COMET_WORKSPACE'],api_key=os.environ['COMET_API_KEY'])
+        client = opik.Opik(
+        workspace=os.environ['COMET_WORKSPACE'],api_key=os.environ['COMET_API_KEY'])
 
         #create/retrieve training sets in my workspace
-        for i,dataset in enumerate(self._training_data):
-            dataset_comet = client.get_or_create_dataset(name=f"multilingual-chatbot-arena-train-{i+1}",
-            description=f"Challenge: Multilingual Chatbot Arena. Training set {i+1}.")
+        if self._training_data[0]:
+            for i,dataset in enumerate(tqdm(self._training_data,desc='Loading training set to cometML')):
+                dataset_comet = client.get_or_create_dataset(name=f"multilingual-chatbot-arena-train-complete-{i+1}",
+                description=f"Challenge: Multilingual Chatbot Arena - Complete. Training set {i+1}.")
 
-            for _,batch in enumerate(utils.batch_generator(dataset,self._data.batch_size,True,True)):
-                dataset_comet.insert(batch)
-                time.sleep(60.0)
+                for _,batch in enumerate(utils.batch_generator(dataset,self._data.batch_size,True,True)):
+                    dataset_comet.insert(batch)
+                    time.sleep(30.0)
 
-        time.sleep(60.0)
+            time.sleep(30.0)
 
         #create/retrieve validation sets in my workspace
-        for i,dataset in enumerate(self._validation_data):
-            dataset_comet = client.get_or_create_dataset(name=f"multilingual-chatbot-arena-validation-{i+1}",
-            description=f"Challenge: Multilingual Chatbot Arena. Validation set {i+1}.")
+        for i,dataset in enumerate(tqdm(self._validation_data, desc='loading validation set to cometML')):
+            dataset_comet = client.get_or_create_dataset(name=f"multilingual-chatbot-arena-validation-complete-{i+1}",
+            description=f"Challenge: Multilingual Chatbot Arena - Complete. Validation set {i+1}.")
 
             for batch in utils.batch_generator(dataset,self._data.batch_size,True,True):
                 dataset_comet.insert(batch)
-                time.sleep(60.0)
+                time.sleep(30.0)
        
 
 def run(

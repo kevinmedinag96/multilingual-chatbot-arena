@@ -6,7 +6,10 @@ import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
-def to_pickle(data : List[List[Dict[str,str]]],file_path : str, file_name : str):
+dt1 = Union[str,int,list[int]]
+pickle_data_spec = List[Union[List[dict[str,str]], dict[str,dt1]]]
+
+def to_pickle(data : pickle_data_spec,file_path : str, file_name : str,include_version : bool = False):
     """
     Creates pickle files (based on the number of lists inside list) in the desired file path.
 
@@ -17,7 +20,12 @@ def to_pickle(data : List[List[Dict[str,str]]],file_path : str, file_name : str)
     """
     pathlib.Path(file_path).mkdir(parents=True, exist_ok=True)
     for i,dataset in enumerate(data):
-        file = file_path + c.SLASH + file_name + c.UNDERSCORE + f"{i+1}.pkl"
+        file = file_path + c.SLASH + file_name 
+        
+        if include_version:
+            file += c.UNDERSCORE + f"{i+1}"        
+        file += '.pkl'
+   
         with open(file, mode="wb") as f:
             pickle.dump(dataset,f)
 
