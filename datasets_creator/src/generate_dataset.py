@@ -39,6 +39,9 @@ class DataSpecs(BaseModel):
     train_size : float
     batch_size : int = 1
     num_val_sets : int = 1
+    comet_ml_dataset_name : Optional[str] = None
+    comet_ml_dataset_description : Optional[str] = None
+
 
 
 class ChatbotDatasetsConstruct:
@@ -200,15 +203,17 @@ class ChatbotDatasetsConstruct:
         """
         
         if self._data.rel_output_path: #output path given, save data into json files in path.
-            
+
             #training data
             parent_folder = c.CURR_PATH + c.SLASH + self._data.rel_output_path
             logger.info(f"Loading training/validation sets in {parent_folder}")
 
-            utils.to_parquet(self._training_data,parent_folder + c.SLASH + "train","train_data")
+            if self._training_data[0]:
+                utils.to_parquet(self._training_data,parent_folder + c.SLASH + "train","train_data")
 
             #validation data
-            utils.to_parquet(self._validation_data,parent_folder + c.SLASH + "validation","validation_data")
+            if self._validation_data[0]:
+                utils.to_parquet(self._validation_data,parent_folder + c.SLASH + "validation","validation_data")
 
         else:
             logger.info("Loading training/validation sets into my workspace in Comet ML")
@@ -227,8 +232,9 @@ class ChatbotDatasetsConstruct:
         #create/retrieve training sets in my workspace
         if self._training_data[0]:
             for i,dataset in enumerate(tqdm(self._training_data,desc='Loading training set to cometML')):
-                dataset_comet = client.get_or_create_dataset(name=f"multilingual-chatbot-arena-train-complete-{i+1}",
-                description=f"Challenge: Multilingual Chatbot Arena - Complete. Training set {i+1}.")
+                dataset_comet = client.get_or_create_dataset(
+                    name=f"{self._data.comet_ml_dataset_name}-train-{i+1}",
+                    description=f"{self._data.comet_ml_dataset_description} - Training set {i+1}.")
 
                 for _,batch in enumerate(utils.batch_generator(dataset,self._data.batch_size,True,True)):
                     dataset_comet.insert(batch)
@@ -237,13 +243,15 @@ class ChatbotDatasetsConstruct:
             time.sleep(30.0)
 
         #create/retrieve validation sets in my workspace
-        for i,dataset in enumerate(tqdm(self._validation_data, desc='loading validation set to cometML')):
-            dataset_comet = client.get_or_create_dataset(name=f"multilingual-chatbot-arena-validation-complete-{i+1}",
-            description=f"Challenge: Multilingual Chatbot Arena - Complete. Validation set {i+1}.")
+        if self._validation_data[0]:
+            for i,dataset in enumerate(tqdm(self._validation_data, desc='loading validation set to cometML')):
+                dataset_comet = client.get_or_create_dataset(
+                    name=f"{self._data.comet_ml_dataset_name}-validation-{i+1}",
+                    description=f"{self._data.comet_ml_dataset_description} - Validation set {i+1}.")
 
-            for batch in utils.batch_generator(dataset,self._data.batch_size,True,True):
-                dataset_comet.insert(batch)
-                time.sleep(30.0)
+                for batch in utils.batch_generator(dataset,self._data.batch_size,True,True):
+                    dataset_comet.insert(batch)
+                    time.sleep(30.0)
        
 
 def run(
@@ -251,14 +259,18 @@ def run(
     train_size : float,
     num_val_sets : int = 1,
     batch_size : int = 1,
-    rel_output_path : Optional[str] = None
+    rel_output_path : Optional[str] = None,
+    comet_ml_dataset_name : Optional[str] = None,
+    comet_ml_dataset_description : Optional[str] = None
 ):
     
     #initialize .env file...
     initialize()
 
+
     data = DataSpecs(rel_input_path=rel_input_path,rel_output_path = rel_output_path,train_size=train_size,
-                     batch_size=batch_size, num_val_sets=num_val_sets)
+                     batch_size=batch_size, num_val_sets=num_val_sets,comet_ml_dataset_name=comet_ml_dataset_name,
+                     comet_ml_dataset_description=comet_ml_dataset_description)
 
     dataset_construct_obj = ChatbotDatasetsConstruct(data,debug=False)
     if dataset_construct_obj.data_status:

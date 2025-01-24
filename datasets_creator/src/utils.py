@@ -1,7 +1,12 @@
 from typing import List,Optional,Dict,Union
 import pickle
 import pathlib
-import datasets_creator.src.constants as c
+try:
+    import datasets_creator.src.constants as c
+except ModuleNotFoundError as e:
+    print(e)
+    import src.constants as c
+
 import numpy as np
 import pandas as pd
 import pyarrow as pa
