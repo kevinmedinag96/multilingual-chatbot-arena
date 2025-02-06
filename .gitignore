@@ -51,6 +51,9 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# beam
+.beamignore
+
 # Translations
 *.mo
 *.pot
