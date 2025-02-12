@@ -231,6 +231,43 @@ tests = ["cloudpickle", "hypothesis", "mypy (>=1.11.1)", "pympler", "pytest (>=4
 tests-mypy = ["mypy (>=1.11.1)", "pytest-mypy-plugins"]
 
 [[package]]
+name = "auto-gptq"
+version = "0.7.1"
+description = "An easy-to-use LLMs quantization package with user-friendly apis, based on GPTQ algorithm."
+optional = false
+python-versions = ">=3.8.0"
+groups = ["main"]
+files = [
+    {file = "auto_gptq-0.7.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:84efeb9527b2d49f3555b2ba9451018c5ff41722c0b0e2fde74f5183ba0c008d"},
+    {file = "auto_gptq-0.7.1-cp310-cp310-win_amd64.whl", hash = "sha256:5d0f3c1b4905e1f14f5b88a33d3dfaf313ebfa138f73c43315f80b40a2d8bb1f"},
+    {file = "auto_gptq-0.7.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a372d81d523b8d2f98639bbca63c0c427cab0ed55b8a57bb96706b0942aa01c9"},
+    {file = "auto_gptq-0.7.1-cp311-cp311-win_amd64.whl", hash = "sha256:8d9d3fbfff94e129bcde0432fd5f6ba09f26aeceea0890a68c898210ba448135"},
+    {file = "auto_gptq-0.7.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fc69a93ab8b24e7854abbb3adbdb3a8c28c8f4db9c82229341922a4b59e0eff1"},
+    {file = "auto_gptq-0.7.1-cp38-cp38-win_amd64.whl", hash = "sha256:d87cd69532bfeb81150a0f8db5ebb5f5f295fa72b5a0403102e791ccac44b933"},
+    {file = "auto_gptq-0.7.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4a1e5972b8ff65956f207908d8789c56fc0d521678ff37bd57e98f392971b3fd"},
+    {file = "auto_gptq-0.7.1-cp39-cp39-win_amd64.whl", hash = "sha256:57b4b284ca4ff4e060088252cbfb18a6f7332477fe57cf2b7ef9af158cce9730"},
+    {file = "auto_gptq-0.7.1.tar.gz", hash = "sha256:5c61ad380e9b4c603757c254765e9083a90a820cd0aff1b5d2c6f7fd96c85e80"},
+]
+
+[package.dependencies]
+accelerate = ">=0.26.0"
+datasets = "*"
+gekko = "*"
+numpy = "*"
+peft = ">=0.5.0"
+rouge = "*"
+safetensors = "*"
+sentencepiece = "*"
+torch = ">=1.13.0"
+tqdm = "*"
+transformers = ">=4.31.0"
+
+[package.extras]
+quality = ["ruff (==0.1.5)"]
+test = ["parameterized", "pytest"]
+triton = ["triton (==2.0.0)"]
+
+[[package]]
 name = "bitsandbytes"
 version = "0.45.1"
 description = "k-bit optimizers and matrix multiplication routines."
@@ -702,6 +739,21 @@ test = ["aiohttp (!=4.0.0a0,!=4.0.0a1)", "numpy", "pytest", "pytest-asyncio (!=0
 test-downstream = ["aiobotocore (>=2.5.4,<3.0.0)", "dask-expr", "dask[dataframe,test]", "moto[server] (>4,<5)", "pytest-timeout", "xarray"]
 test-full = ["adlfs", "aiohttp (!=4.0.0a0,!=4.0.0a1)", "cloudpickle", "dask", "distributed", "dropbox", "dropboxdrivefs", "fastparquet", "fusepy", "gcsfs", "jinja2", "kerchunk", "libarchive-c", "lz4", "notebook", "numpy", "ocifs", "pandas", "panel", "paramiko", "pyarrow", "pyarrow (>=1)", "pyftpdlib", "pygit2", "pytest", "pytest-asyncio (!=0.22.0)", "pytest-benchmark", "pytest-cov", "pytest-mock", "pytest-recording", "pytest-rerunfailures", "python-snappy", "requests", "smbprotocol", "tqdm", "urllib3", "zarr", "zstandard"]
 tqdm = ["tqdm"]
+
+[[package]]
+name = "gekko"
+version = "1.2.1"
+description = "Machine learning and optimization for dynamic systems"
+optional = false
+python-versions = ">=2.6"
+groups = ["main"]
+files = [
+    {file = "gekko-1.2.1-py3-none-any.whl", hash = "sha256:dfcaad7aaf06b0bc53a90547a5aa415b0de43b93b2443093a1afc7979fadc256"},
+    {file = "gekko-1.2.1.tar.gz", hash = "sha256:6b7232eb507725d74b7848a569ae59d2c9907a98e47f236be26382131fb52e53"},
+]
+
+[package.dependencies]
+numpy = ">=1.8"
 
 [[package]]
 name = "h11"
@@ -1668,6 +1720,17 @@ files = [
 ]
 
 [[package]]
+name = "nvidia-ml-py3"
+version = "7.352.0"
+description = "Python Bindings for the NVIDIA Management Library"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "nvidia-ml-py3-7.352.0.tar.gz", hash = "sha256:390f02919ee9d73fe63a98c73101061a6b37fa694a793abf56673320f1f51277"},
+]
+
+[[package]]
 name = "nvidia-nccl-cu12"
 version = "2.21.5"
 description = "NVIDIA Collective Communication Library (NCCL) Runtime"
@@ -1759,6 +1822,51 @@ sentry_sdk = ">=2.0.0"
 tenacity = "*"
 tqdm = "*"
 uuid6 = "*"
+
+[[package]]
+name = "optimum"
+version = "1.24.0"
+description = "Optimum Library is an extension of the Hugging Face Transformers library, providing a framework to integrate third-party libraries from Hardware Partners and interface with their specific functionality."
+optional = false
+python-versions = ">=3.9.0"
+groups = ["main"]
+files = [
+    {file = "optimum-1.24.0-py3-none-any.whl", hash = "sha256:196776949183cd3a56a15097a02be41e6f37aa92d824bd053de89c39ee6b0087"},
+    {file = "optimum-1.24.0.tar.gz", hash = "sha256:b502a2afbf78bb73370ebb1eff07b93108a1b386116e87eb17e882d210150551"},
+]
+
+[package.dependencies]
+huggingface-hub = ">=0.8.0"
+numpy = "*"
+packaging = "*"
+torch = ">=1.11"
+transformers = ">=4.29"
+
+[package.extras]
+amd = ["optimum-amd"]
+benchmark = ["evaluate (>=0.2.0)", "optuna", "scikit-learn", "seqeval", "torchvision", "tqdm"]
+dev = ["Pillow", "accelerate", "black (>=23.1,<24.0)", "einops", "parameterized", "pytest (<=8.0.0)", "pytest-xdist", "requests", "rjieba", "ruff (==0.1.5)", "sacremoses", "scikit-learn", "sentencepiece", "timm", "torchaudio", "torchvision"]
+diffusers = ["diffusers"]
+doc-build = ["accelerate"]
+exporters = ["onnx", "onnxruntime", "timm", "transformers (>=4.36,<4.49.0)"]
+exporters-gpu = ["onnx", "onnxruntime-gpu", "timm", "transformers (>=4.36,<4.49.0)"]
+exporters-tf = ["datasets (<=2.16)", "h5py", "numpy (<1.24.0)", "onnx", "onnxruntime", "tensorflow (>=2.4,<=2.12.1)", "tf2onnx", "timm", "transformers (>=4.36,<4.38)"]
+furiosa = ["optimum-furiosa"]
+graphcore = ["optimum-graphcore"]
+habana = ["optimum-habana", "transformers (>=4.45.0,<4.46.0)"]
+intel = ["optimum-intel (>=1.18.0)"]
+ipex = ["optimum-intel[ipex] (>=1.18.0)"]
+neural-compressor = ["optimum-intel[neural-compressor] (>=1.18.0)"]
+neuron = ["optimum-neuron[neuron] (>=0.0.20)", "transformers (>=4.36.2,<4.42.0)"]
+neuronx = ["optimum-neuron[neuronx] (>=0.0.20)", "transformers (>=4.36.2,<4.42.0)"]
+nncf = ["optimum-intel[nncf] (>=1.18.0)"]
+onnxruntime = ["datasets (>=1.2.1)", "evaluate", "onnx", "onnxruntime (>=1.11.0)", "protobuf (>=3.20.1)", "transformers (>=4.36,<4.49.0)"]
+onnxruntime-gpu = ["datasets (>=1.2.1)", "evaluate", "onnx", "onnxruntime-gpu (>=1.11.0)", "protobuf (>=3.20.1)", "transformers (>=4.36,<4.49.0)"]
+onnxruntime-training = ["accelerate", "datasets (>=1.2.1)", "evaluate", "onnxruntime-training (>=1.11.0)", "protobuf (>=3.20.1)", "torch-ort", "transformers (>=4.36,<4.49.0)"]
+openvino = ["optimum-intel[openvino] (>=1.18.0)"]
+quality = ["black (>=23.1,<24.0)", "ruff (==0.1.5)"]
+quanto = ["optimum-quanto (>=0.2.4)"]
+tests = ["Pillow", "accelerate", "einops", "parameterized", "pytest (<=8.0.0)", "pytest-xdist", "requests", "rjieba", "sacremoses", "scikit-learn", "sentencepiece", "timm", "torchaudio", "torchvision"]
 
 [[package]]
 name = "packaging"
@@ -2761,6 +2869,21 @@ typing-extensions = {version = ">=4.0.0,<5.0", markers = "python_version < \"3.1
 
 [package.extras]
 jupyter = ["ipywidgets (>=7.5.1,<9)"]
+
+[[package]]
+name = "rouge"
+version = "1.0.1"
+description = "Full Python ROUGE Score Implementation (not a wrapper)"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "rouge-1.0.1-py3-none-any.whl", hash = "sha256:28d118536e8c774dc47d1d15ec266479b4dd0914c4672ce117d4002789bdc644"},
+    {file = "rouge-1.0.1.tar.gz", hash = "sha256:12b48346ca47d6bcf3c45061f315452b9ccec0620ee895ec85b7efc3d54aae34"},
+]
+
+[package.dependencies]
+six = "*"
 
 [[package]]
 name = "rpds-py"
@@ -3977,4 +4100,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.11"
-content-hash = "2acfebcc7275b3dec228dae000b4f1c1c06a661017f3e1b6ca06946aef680834"
+content-hash = "f1f6ed27da5a4ca36e8c6ef16884a6f1dc4c4ecc4564dd6d4832cc42d9272841"
