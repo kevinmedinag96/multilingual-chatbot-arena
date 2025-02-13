@@ -12,3 +12,6 @@ dataset_generator_comet_linux:
 
 dataset_generator_local_linux:
 	python datasets_creator/src/generate_dataset.py --rel_input_path ${rel_input_path} --rel_output_path ${output_path} --train_size ${train_size} --num_val_sets ${num_val_sets}
+
+run_trainer:
+	python multilingual_chatbot_arena/train/main.py 

@@ -101,14 +101,7 @@ class Data:
         self.hf_datasets = self.hf_datasets.map(apply_chat_template,
                                                 fn_kwargs={"tokenizer": self.tokenizer},
                                 remove_columns=column_names,
-                                desc="Applying chat template")
-        
-
-
-        
-
-
-        
+                                desc="Applying chat template")       
 
 
     def ingest_from_comet(self) ->pd.DataFrame:
