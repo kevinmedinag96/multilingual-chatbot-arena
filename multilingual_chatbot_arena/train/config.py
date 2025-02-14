@@ -44,10 +44,12 @@ class TrainingParams:
     logging_steps: int = 50
     log_level: str ="info"
     save_strategy: str ="steps"
+    save_steps: int = 500
     save_total_limit: int =2
     seed: int = 155
     data_seed: int = 142
-    fp16: bool =True
+    fp16: bool =False
+    bf16 : bool = False
     load_best_model_at_end: bool =True
     auto_find_batch_size: bool =False
     dataset_text_field: str ='conversation'
@@ -91,7 +93,20 @@ quantization_params = QuantizationParams(
 )
 
 training_params = TrainingParams(
-    output_dir= f"{llm_params.model_id.replace('/','-')}/{data_params.comet_dataset_name}/exp-1"
+    output_dir= f"./chkpts/{llm_params.model_id.replace('/','-')}/{data_params.comet_dataset_name}/exp-1",
+    bf16=True,
+    num_train_epochs=10,
+    eval_steps=200,
+    logging_steps=200,
+    #gradient_accumulation_steps=10,
+    save_steps=800,
+    #gradient_checkpointing=True,
+    per_device_eval_batch_size=2,
+    per_device_train_batch_size=2,
+    #auto_find_batch_size=True,
+    #gradient_checkpointing_kwargs={"use_reentrant": False},
+    torch_empty_cache_steps=30
+    
 )
 
 lora_params = LoraParams()
