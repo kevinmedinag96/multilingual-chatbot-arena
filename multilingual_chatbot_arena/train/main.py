@@ -119,7 +119,7 @@ def run():
     }
 
     #training loop with validation as evaluation steps
-    trainer_obj = trainer.CustomSFTTrainer(**trainer_kwargs)    
+    trainer_obj = trainer.CustomSFTTrainer(**trainer_kwargs)   
 
     result = trainer_obj.train()
 

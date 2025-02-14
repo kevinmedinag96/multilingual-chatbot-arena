@@ -1,0 +1,12 @@
+flash-attn>=2.7.4.post1 --no-build-isolation
+trl>=0.15.0
+torch>=2.6.0
+unsloth>=2025.2.9
+transformers>=4.48.3
+fire
+python-dotenv
+loguru
+opik>=1.4.14
+scikit-learn>=1.6.1
+comet_ml
+pynmvl
