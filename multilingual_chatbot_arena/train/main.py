@@ -65,15 +65,15 @@ def run():
         eval_steps=training_params.eval_steps,
         per_device_eval_batch_size=training_params.per_device_eval_batch_size,
         per_device_train_batch_size=training_params.per_device_train_batch_size,
-        #gradient_accumulation_steps=training_params.gradient_accumulation_steps,
-        #gradient_checkpointing=training_params.checkpointing,
-        #gradient_checkpointing_kwargs=training_params.gradient_checkpointing_kwargs,
+        gradient_accumulation_steps=training_params.gradient_accumulation_steps,
+        gradient_checkpointing=training_params.gradient_checkpointing,
+        gradient_checkpointing_kwargs=training_params.gradient_checkpointing_kwargs,
         torch_empty_cache_steps=training_params.torch_empty_cache_steps,
         learning_rate=training_params.learning_rate,
         weight_decay=training_params.weight_decay,
         num_train_epochs=training_params.num_train_epochs,
         #max_steps=training_params.max_steps,
-        #lr_scheduler_type=training_params.lr_scheduler_type,
+        lr_scheduler_type=training_params.lr_scheduler_type,
         logging_strategy=training_params.logging_strategy,
         logging_steps=training_params.logging_steps,
         log_level=training_params.log_level,
@@ -84,12 +84,12 @@ def run():
         data_seed= training_params.data_seed,
         fp16=training_params.fp16,
         load_best_model_at_end=training_params.load_best_model_at_end,
-        #auto_find_batch_size=training_params.auto_find_batch_size,
+        auto_find_batch_size=training_params.auto_find_batch_size,
         model_init_kwargs=model_kwargs,
         dataset_text_field=training_params.dataset_text_field,
         packing=training_params.packing,
         max_seq_length=llm_params.max_seq_length,
-        run_name=f"{llm_params.model_id}/{data_params.comet_dataset_name}/1"
+        run_name=training_params.output_dir
         #include_for_metrics=["loss"]
     )
 

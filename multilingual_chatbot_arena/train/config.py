@@ -92,8 +92,10 @@ quantization_params = QuantizationParams(
     load_in_4bit=True
 )
 
+
+experiment_basename = f"{llm_params.model_id.replace('/','-')}/{data_params.comet_dataset_name}/exp-1"
 training_params = TrainingParams(
-    output_dir= f"./chkpts/{llm_params.model_id.replace('/','-')}/{data_params.comet_dataset_name}/exp-1",
+    output_dir= f"./chkpts/{experiment_basename}",
     bf16=False,
     fp16=True,
     num_train_epochs=1,
