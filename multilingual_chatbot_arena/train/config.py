@@ -54,6 +54,7 @@ class TrainingParams:
     auto_find_batch_size: bool =False
     dataset_text_field: str ='conversation'
     packing: bool =False
+    metric_for_best_model : Optional[str] = None
 
 
 
@@ -108,7 +109,8 @@ training_params = TrainingParams(
     per_device_train_batch_size=2,
     #auto_find_batch_size=True,
     #gradient_checkpointing_kwargs={"use_reentrant": False},
-    torch_empty_cache_steps=30
+    torch_empty_cache_steps=30,
+    metric_for_best_model = "eval_f1_score"
     
 )
 

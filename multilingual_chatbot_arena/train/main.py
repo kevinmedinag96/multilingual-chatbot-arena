@@ -89,7 +89,7 @@ def run():
         dataset_text_field=training_params.dataset_text_field,
         packing=training_params.packing,
         max_seq_length=llm_params.max_seq_length,
-        run_name=training_params.output_dir
+        run_name=training_params.output_dir.replace("./chkpts/",""),
         #include_for_metrics=["loss"]
     )
 
@@ -118,16 +118,30 @@ def run():
         "callbacks" : [CometCallback()]
     }
 
+    dataset_to_trainer = {
+        "train" : "train",
+        "validation" : "eval",
+        "test" : "test"
+    }
+
+    #include train-validation-test (if not none) to trainer arguments
+    trainer_kwargs.update({
+        f"{v}_dataset": data_obj.hf_datasets[k] for k,v in dataset_to_trainer.items() if v
+    })
+
+
     #training loop with validation as evaluation steps
-    trainer_obj = trainer.CustomSFTTrainer(**trainer_kwargs)   
 
-    result = trainer_obj.train()
+    if "train_dataset" in trainer_kwargs.keys():
+        trainer_obj = trainer.CustomSFTTrainer(**trainer_kwargs)   
 
-    print_summary(result)   
+        result = trainer_obj.train()
 
-    #Evaluating model's performance on a test dataset 
-     
-    outputs_test = trainer_obj.predict()
+        print_summary(result)   
+
+    #Evaluating model's performance on a test dataset  
+    if "test_dataset" in trainer_kwargs.keys():    
+        outputs_test = trainer_obj.predict()
 
      
 

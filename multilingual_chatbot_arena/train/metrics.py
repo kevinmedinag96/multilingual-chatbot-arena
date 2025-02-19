@@ -90,7 +90,8 @@ def compute_metrics(eval_pred : EvalPrediction , processing_class):
         "recall" : recall_score(labels_winners,predictions_winners),
         "negative_predictive_value" : negative_predictive_value,
         "specificity" : specificity,
-        "roc_auc" : roc_auc_score(labels_winners,predictions_winners)
+        "roc_auc" : roc_auc_score(labels_winners,predictions_winners),
+        "f1_score" : f1_score(labels_winners,predictions_winners)
     }
 
 if __name__ == "__main__":

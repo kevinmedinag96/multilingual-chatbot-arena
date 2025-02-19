@@ -1,0 +1,54 @@
+Expiment analyses
+
+* Qwen-Qwen2.5-0.5B-Instruct/multilingual-chatbot-arena-v8-train-1/exp-1
+
+Dataset split:
+train : 1307
+validation: 373
+test: 188
+
+epochs: 10
+lr= 2e-5
+scheduler_type: linear
+
+labels's distribution:
+All target dataset's (train,validation,test) labels are roughly distributed to 51.2 % to the true class (1,model_a) and
+48.8% to the negative class (0,model_b) 
+
+
+train analysis:
+1.- Loss starts at 2.032 and stabilizes between 1.66 and 1.62
+2.- Grad_norm is relatively good. peak is at 0.19, by the end of training stabilizes between 0.122 and 0.109
+
+validation analysis:
+
+1.- Loss starts at 1.996 and gradually descends to 1.551
+
+2.- accuracy: step: 50 value: .4933, step: 100 value: 0.5013, step:150 value: 0.5121, following steps converged to the 150th step
+value. Intuitively, model predicted all records to be class true, thus converging accuracy to the dataset classes' proportion.
+
+3.- precision: step: 50 value: .5047, step: 100 value: 0.5126, step:150 value: 0.5121, following steps converged to the 150th
+step value. Similar analysis as for accuracy.
+
+4.- recall: step: 50 value: 0.5602, step: 100 value: 0.534, step:150 value: 1.0 (zero false negatives), following steps 
+converged to the 150th step value. To reach a metric of perfect one, this means that false negatives should be a perfect
+zero.
+
+5.- negative_predictive_value: step: 50 value: 0.4783, step: 100 value: 0.4885, step:150 value: NaN, following steps 
+converged to the 150th step value. To achieve a NaN in this metric, it means that the pair ground-truth/predictions for
+categories: true negative and false negatives are both zero. Thus, the model completely eliminated the negative class
+(model_b) from its memory.
+
+6.- specificity (tn / tn + fp) step: 50 value: 0.4231, step: 100 value: 0.467, step:150 value: 0, following steps 
+converged to the 150th step value. To achieve a zero and not NaN, this means that the model in fact predicted a couple
+of false positives, but predicted zero negatives (thus tn= 0).
+
+Conclusions:
+Based on the previous premises, it is clear that the model thought that in order to minimize loss, his responses
+should always predict class A is better, completely blocking the idea that perhaps the best response comes from model B.
+This is erroneous and undesired, to fix this issue I'll try the following solutions:
+
+1.- Increase dataset number of records.
+2.- Duplicate dataset by switching response a's with b's and changing the best response accordingly.
+3.- Test with bigger models.
+4.- test label_smoothing

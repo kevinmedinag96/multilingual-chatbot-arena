@@ -83,6 +83,7 @@ class ChatbotDatasetsConstruct:
         
         try:
             self._df: pd.DataFrame = pd.read_parquet(c.CURR_PATH + c.SLASH + self._data.rel_input_path)
+            print(f"dataset shape: {self._df.shape}")
         except FileNotFoundError as e:
             print(f"{e}->\nThe provided data path is non existent, please verify this parameter.")
             return False
