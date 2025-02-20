@@ -9,7 +9,7 @@ loguru
 opik>=1.4.14
 scikit-learn>=1.6.1
 comet_ml
-#pynmvl
+#pynvml
 matplotlib
 seaborn
 unstructured
