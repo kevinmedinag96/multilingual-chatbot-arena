@@ -82,9 +82,9 @@ class Data:
 
         #convert from pandas datasets to hf datasets
         self.hf_datasets = DatasetDict({k : Dataset.from_pandas(v) for k,v in dict_datasets_pd.items()})
-
+        
         #prepare dataset's examples with the chat template 
-        self.set_tokenizer()
+
         def apply_chat_template(example,tokenizer):
             messages = [
                 {'role' : 'system' , 'content' : c.SYSTEM_TEMPLATE},

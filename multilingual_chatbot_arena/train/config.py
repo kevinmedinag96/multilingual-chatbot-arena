@@ -110,7 +110,7 @@ training_params = TrainingParams(
     #auto_find_batch_size=True,
     #gradient_checkpointing_kwargs={"use_reentrant": False},
     torch_empty_cache_steps=30,
-    metric_for_best_model = "eval_f1_score"
+    metric_for_best_model = "eval_accuracy"
     
 )
 

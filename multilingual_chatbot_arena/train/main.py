@@ -1,6 +1,7 @@
 
 import pathlib
 import sys
+import os
 from fire import Fire
 root_repo_directory = pathlib.Path().resolve().__str__() 
 sys.path.append(root_repo_directory)
@@ -30,6 +31,8 @@ from trainer_utils import (
 from transformers.integrations.integration_utils import (
     CometCallback
 )
+
+import shutil
 
 def run():   
 
@@ -91,6 +94,7 @@ def run():
         max_seq_length=llm_params.max_seq_length,
         run_name=training_params.output_dir.replace("./chkpts/",""),
         #include_for_metrics=["loss"]
+        metric_for_best_model=training_params.metric_for_best_model
     )
 
 
@@ -107,9 +111,9 @@ def run():
     trainer_kwargs = {
         "model" : llm_params.model_id,
         "args" : training_config,
-        "train_dataset" :data_obj.hf_datasets['train'],
-        "eval_dataset" : data_obj.hf_datasets['validation'],
-        "test_dataset" : data_obj.hf_datasets['test'],
+        #"train_dataset" :data_obj.hf_datasets['train'],
+        #"eval_dataset" : data_obj.hf_datasets['validation'],
+        #"test_dataset" : data_obj.hf_datasets['test'],
         "processing_class" : data_obj.tokenizer,
         "peft_config" :peft_config,
         "compute_metrics" : metrics.compute_metrics,
@@ -126,27 +130,92 @@ def run():
 
     #include train-validation-test (if not none) to trainer arguments
     trainer_kwargs.update({
-        f"{v}_dataset": data_obj.hf_datasets[k] for k,v in dataset_to_trainer.items() if v
+        f"{v}_dataset": data_obj.hf_datasets[k] for k,v in dataset_to_trainer.items() if k in data_obj.hf_datasets
     })
 
 
-    #training loop with validation as evaluation steps
+    
+    set_train = False
+    set_test = False
 
     if "train_dataset" in trainer_kwargs.keys():
+        set_train = True
+    
+    if "test_dataset" in trainer_kwargs.keys():
+        set_test = True
+
+    #training loop with validation as evaluation steps
+    if set_train:
         trainer_obj = trainer.CustomSFTTrainer(**trainer_kwargs)   
 
         result = trainer_obj.train()
 
         print_summary(result)   
 
+        
+
     #Evaluating model's performance on a test dataset  
-    if "test_dataset" in trainer_kwargs.keys():    
+    if set_test:    
         outputs_test = trainer_obj.predict()
 
-     
 
 
-    
+    #save artifacts as assets from experiment...
+    try:
+        exp: comet_ml.CometExperiment | None = comet_ml.get_running_experiment()
+        if not exp:
+            raise ValueError("experiment was empty")
+
+        if set_train:
+            dataset_name = 'train_dataset'
+            #store train dataset to disk
+            trainer_kwargs[dataset_name].save_to_disk("tmp/datasets/train")
+
+            #create train dataset artifact
+            train_artifact = comet_ml.Artifact(name=dataset_name, artifact_type="dataset",version="1.0.0",
+                            aliases=["train"],
+                            metadata={
+                                "from_opik_dataset" : "multilingual-chatbot-arena-vz0_1-train-1"
+                            })
+            train_artifact.add("./tmp/datasets/train")
+            exp.log_artifact(train_artifact)
+            
+            #create validation dataset artifact
+            dataset_name = 'eval_dataset'
+
+            #store validation dataset to disk
+            trainer_kwargs[dataset_name].save_to_disk("tmp/datasets/eval")
+
+            eval_artifact = comet_ml.Artifact(name=dataset_name, artifact_type="dataset",version="1.0.0",
+                            aliases=["validation"],
+                            metadata={
+                                "from_opik_dataset" : "multilingual-chatbot-arena-vz0_1-train-1"
+                            })
+            eval_artifact.add("./tmp/datasets/eval")
+            exp.log_artifact(eval_artifact)
+
+        if set_test:
+            #create validation dataset artifact
+            dataset_name = 'test_dataset'
+
+            #store test dataset to disk
+            trainer_kwargs[dataset_name].save_to_disk("tmp/datasets/test")
+
+            test_artifact = comet_ml.Artifact(name=dataset_name, artifact_type="dataset",version="1.0.0",
+                            aliases=["test"],
+                            metadata={
+                                "from_opik_dataset" : "multilingual-chatbot-arena-vz0_1-train-1"
+                            })
+            test_artifact.add("./tmp/datasets/test")
+            exp.log_artifact(test_artifact)
+
+        #remove temporal folder
+        shutil.rmtree("./tmp")
+
+    except Exception as e:
+        print("Trouble loading artifacts to comet ml")
+        print(e)
+
 
 
 
