@@ -34,12 +34,23 @@ from transformers.integrations.integration_utils import (
 
 import shutil
 
+from accelerate import PartialState
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, AutoTokenizer
+
 def run():   
 
     initialize()
+
+    #load tokenizer
+    tokenizer = AutoTokenizer.from_pretrained(llm_params.model_id,
+                                                       padding_side="right",legacy=False, trust_remote_code=True,
+                                                       token=os.environ['HF_TOKEN'])
+    
+    if tokenizer.pad_token_id is None:
+        tokenizer.pad_token_id = tokenizer.eos_token_id
     
     #Datasets preparation
-    data_obj = data_preparation.Data(data_params,llm_params)
+    data_obj = data_preparation.Data(data_params,llm_params,tokenizer)
 
     #quantization config
     quantization_config = BitsAndBytesConfig(
@@ -114,7 +125,7 @@ def run():
         #"train_dataset" :data_obj.hf_datasets['train'],
         #"eval_dataset" : data_obj.hf_datasets['validation'],
         #"test_dataset" : data_obj.hf_datasets['test'],
-        "processing_class" : data_obj.tokenizer,
+        "processing_class" : tokenizer,
         "peft_config" :peft_config,
         "compute_metrics" : metrics.compute_metrics,
         "preprocess_logits_for_metrics" : preprocess_logits_for_metrics,
@@ -220,4 +231,4 @@ def run():
 
 
 if __name__ == "__main__":
-    Fire(run)
+    run()

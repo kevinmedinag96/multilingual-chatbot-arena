@@ -23,23 +23,15 @@ from sklearn.model_selection import train_test_split
 
 class Data:
 
-    def __init__(self,data_params : DataParams, llm_params : LLMParams):
+    def __init__(self,data_params : DataParams, llm_params : LLMParams,tokenizer):
         self.data_params = data_params
         self.ll_params = llm_params
         self.opik_client = opik.Opik(project_name=os.environ['COMET_PROJECT_NAME'],
         workspace=os.environ['COMET_WORKSPACE'],api_key=os.environ['COMET_API_KEY'])
 
-        self.set_tokenizer()
+        self.tokenizer = tokenizer
         self.process_data()
         
-
-
-    def set_tokenizer(self):
-        self.tokenizer = AutoTokenizer.from_pretrained(self.ll_params.model_id,
-                                                       padding_side="right",legacy=False)
-
-        if self.tokenizer.pad_token_id is None:
-            self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
 
     def process_data(self):
 
@@ -120,7 +112,7 @@ def run():
 
     initialize()
 
-    data_obj = Data(data_params,llm_params)
+    #data_obj = Data(data_params,llm_params)
 
     
 

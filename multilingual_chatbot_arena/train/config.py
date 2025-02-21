@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 import torch
 from typing import Union
+from accelerate import PartialState
 
 @dataclass
 class DataParams:
@@ -20,7 +21,7 @@ class LLMParams:
     attn_implementation : Union[bool,str]
     torch_dtype : str = "auto"
     use_cache : bool =False
-    device_map : str = "auto"
+    device_map : Union[str,dict] = "auto"
 
 @dataclass
 class TrainingParams:
@@ -55,6 +56,7 @@ class TrainingParams:
     dataset_text_field: str ='conversation'
     packing: bool =False
     metric_for_best_model : Optional[str] = None
+    accelerator_config : Optional[dict] = None
 
 
 
@@ -79,7 +81,8 @@ class LoraParams:
 llm_params = LLMParams(
     model_id= "Qwen/Qwen2.5-0.5B-Instruct",
     max_seq_length=5000,
-    attn_implementation="flash_attention_2"
+    attn_implementation="flash_attention_2",
+    device_map={'':PartialState().process_index}
 )
 
 data_params = DataParams(
@@ -110,7 +113,11 @@ training_params = TrainingParams(
     #auto_find_batch_size=True,
     #gradient_checkpointing_kwargs={"use_reentrant": False},
     torch_empty_cache_steps=30,
-    metric_for_best_model = "eval_accuracy"
+    metric_for_best_model = "eval_accuracy",
+    accelerator_config = {
+        "split_batches" : True,
+        "dispatch_batches" : True,
+    }
     
 )
 
