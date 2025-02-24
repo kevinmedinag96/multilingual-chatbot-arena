@@ -34,8 +34,7 @@ from transformers.integrations.integration_utils import (
 
 import shutil
 
-from accelerate import PartialState
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 def run():   
 
@@ -65,7 +64,8 @@ def run():
         torch_dtype=llm_params.torch_dtype,
         use_cache=llm_params.use_cache, # set to False as we're going to use gradient checkpointing
         device_map=llm_params.device_map,
-        quantization_config=quantization_config
+        quantization_config=quantization_config,
+        token=os.environ['HF_TOKEN']
     )       
 
     #trainer set up
@@ -105,7 +105,8 @@ def run():
         max_seq_length=llm_params.max_seq_length,
         run_name=training_params.output_dir.replace("./chkpts/",""),
         #include_for_metrics=["loss"]
-        metric_for_best_model=training_params.metric_for_best_model
+        metric_for_best_model=training_params.metric_for_best_model,
+        ddp_find_unused_parameters= training_params.ddp_find_unused_parameters
     )
 
 

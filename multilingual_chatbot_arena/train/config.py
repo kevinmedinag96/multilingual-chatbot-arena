@@ -41,6 +41,7 @@ class TrainingParams:
     num_train_epochs: int = 1
     max_steps : Optional[int] = None
     lr_scheduler_type: str = "linear"
+    warmup_steps : int = 0
     logging_strategy: str ="steps"
     logging_steps: int = 50
     log_level: str ="info"
@@ -57,6 +58,7 @@ class TrainingParams:
     packing: bool =False
     metric_for_best_model : Optional[str] = None
     accelerator_config : Optional[dict] = None
+    ddp_find_unused_parameters: Optional[bool] = False
 
 
 
@@ -64,7 +66,7 @@ class TrainingParams:
 class QuantizationParams:
     load_in_4bit : bool = False
     bnb_4bit_quant_type : str = "nf4"
-    bnb_4bit_compute_dtype = torch.float16
+    bnb_4bit_compute_dtype = torch.bfloat16
 
 @dataclass
 class LoraParams:
@@ -80,7 +82,7 @@ class LoraParams:
 
 llm_params = LLMParams(
     model_id= "Qwen/Qwen2.5-0.5B-Instruct",
-    max_seq_length=5000,
+    max_seq_length=21000,
     attn_implementation="flash_attention_2",
     device_map={'':PartialState().process_index}
 )
@@ -88,7 +90,7 @@ llm_params = LLMParams(
 data_params = DataParams(
     comet_dataset_name="multilingual-chatbot-arena-v8-train-1",
     comet_datset_description="Challenge WSDM CUP. Curated-small-dataset-v8 - Training set 1. - Training set 1.",
-    train_validation_test_split=[0.7,0.2],
+    train_validation_test_split=[0.85,0.1],
     seed=142
 )
 
@@ -105,6 +107,7 @@ training_params = TrainingParams(
     num_train_epochs=1,
     eval_steps=2,
     logging_steps=2,
+    warmup_steps = 2,
     #gradient_accumulation_steps=10,
     save_steps=2,
     #gradient_checkpointing=True,
@@ -112,11 +115,11 @@ training_params = TrainingParams(
     per_device_train_batch_size=2,
     #auto_find_batch_size=True,
     #gradient_checkpointing_kwargs={"use_reentrant": False},
-    torch_empty_cache_steps=30,
+    torch_empty_cache_steps=10,
     metric_for_best_model = "eval_accuracy",
     accelerator_config = {
-        "split_batches" : True,
-        "dispatch_batches" : True,
+        "split_batches" : False,
+        "dispatch_batches" : False,
     }
     
 )
